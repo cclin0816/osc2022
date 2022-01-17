@@ -1,5 +1,6 @@
 **/build/*
 **/debug/*
-references
-test
+**/test/*
+**/resource/*
 .vscode
+.clang-tidy

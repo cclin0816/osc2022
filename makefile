@@ -1,44 +1,57 @@
+# make targets:
+COMMON_DIR = common
 KN_DIR = kernel
 BL_DIR = bootloader
 USR_DIR = user
 
+# tool chain
 CC = clang
 CXX = clang++
-LD = ld.lld
+LD = $(CC)
 OBJCOPY = llvm-objcopy-13
 OBJDUMP = llvm-objdump-13
 # GDB = gdb-multiarch --se=kernel8.elf -ex 'gef' -ex 'target remote localhost:1234'
 
-TARGET_ARCH = aarch64-arm-none-eabi
+
+# compiler flags
+# using linux-gnu for libc++ header support, none-eabi is better if you don't need libc++
+TARGET_ARCH = aarch64-linux-gnu
 TARGET_CPU = cortex-a53
 OPTIMIZE = -O3
-WARNINGS = -Wall -Wextra -Wpedantic -Werror
+WARNINGS = -Wall -Wextra -Wpedantic
 BAREMETAL = -ffreestanding 
-CXX_NOEXCEP = -fno-exceptions -fno-unwind-tables -fno-rtti
-
-CFLAGS = -std=c11 -target $TARGET_ARCH -mcpu=$TARGET_CPU $WARNINGS $BAREMETAL
-CXXFLAGS = -std=c++17 -target $TARGET_ARCH -mcpu=$TARGET_CPU $WARNINGS $BAREMETAL $CXX_NOEXCEP
-LDFLAGS = --gc-sections -nostdlib -fpie
+NOEXCEP = -fno-exceptions -fno-unwind-tables -fno-rtti
+LTO = -flto=thin
+CSTANDARD = -std=c11
+CXXSTANDARD = -std=c++20
+CFLAGS = $(CSTANDARD) -target $(TARGET_ARCH) -mcpu=$(TARGET_CPU) $(WARNINGS) $(BAREMETAL) $(LTO)
+CXXFLAGS = $(CXXSTANDARD) -target $(TARGET_ARCH) -mcpu=$(TARGET_CPU) $(WARNINGS) $(BAREMETAL) $(NOEXCEP) $(LTO)
+LDFLAGS = --gc-sections -nostdlib -static-pie $(LTO)
 DBGFLAGS = -ggdb3 -Og
 
-export CC CXX LD CFLAGS CXXFLAGS LDFLAGS OPTIMIZE DBGFLAGS
+# include paths 
+INCLUDE = -I $(abspath $(COMMON_DIR)/include)
+
+export CC CXX LD CFLAGS CXXFLAGS LDFLAGS OPTIMIZE DBGFLAGS INCLUDE
 
 .PHONY: all clean
 
 all:
-	@echo "Building kernel"
+	@echo "Building Common"
+	@make -C $(COMMON_DIR)
+	@echo "Building Kernel"
 	@make -C $(KN_DIR)
-	@echo "Building bootloader"
+	@echo "Building Bootloader"
 	@make -C $(BL_DIR)
-	@echo "Building user"
+	@echo "Building User"
 	@make -C $(USR_DIR)
 
 clean:
-	@echo "Cleaning kernel"
+	@echo "Cleaning Common"
+	@make -C $(COMMON_DIR) clean
+	@echo "Cleaning Kernel"
 	@make -C $(KN_DIR) clean
-	@echo "Cleaning bootloader"
+	@echo "Cleaning Bootloader"
 	@make -C $(BL_DIR) clean
-	@echo "Cleaning user"
-	@make -C $(USR_DIR) clean
-
+	@echo "Cleaning User"
 

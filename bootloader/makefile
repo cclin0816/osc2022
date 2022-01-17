@@ -1,12 +1,12 @@
-.PHONY: clean
+# .PHONY: clean
 
-$TARGET = bootloader
-$LINKER = linker.ld
+# $TARGET = bootloader
+# $LINKER = linker.ld
 
-all: $(TARGET).img
+# all: $(TARGET).img
 	
-%.img: %.elf
-	$(OBJCOPY) -O binary $< $@
+# %.img: %.elf
+# 	$(OBJCOPY) -O binary $< $@
 
-%.elf: $(LINKER) $(OBJS)
-	$(LD) -T $(LINKER) $(LDFLAGS) -o $@ $(OBJS)
+# %.elf: $(LINKER) $(OBJS)
+# 	$(LD) -T $(LINKER) $(LDFLAGS) -o $@ $(OBJS)
