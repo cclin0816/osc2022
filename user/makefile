@@ -1,7 +1,7 @@
 .PHONY: clean
 
 all:
-	@echo "User Make all"
+
+debug:
 
 clean:
-	@echo "User Make clean"

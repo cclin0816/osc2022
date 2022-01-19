@@ -10,3 +10,12 @@
 
 # %.elf: $(LINKER) $(OBJS)
 # 	$(LD) -T $(LINKER) $(LDFLAGS) -o $@ $(OBJS)
+
+
+.PHONY: clean
+
+all:
+
+debug:
+
+clean:

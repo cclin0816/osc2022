@@ -1,5 +1,5 @@
 # make targets:
-COMMON_DIR = common
+COMMON_DIR = $(abspath ./common)
 KN_DIR = kernel
 BL_DIR = bootloader
 USR_DIR = user
@@ -29,29 +29,51 @@ CXXFLAGS = $(CXXSTANDARD) -target $(TARGET_ARCH) -mcpu=$(TARGET_CPU) $(WARNINGS)
 LDFLAGS = --gc-sections -nostdlib -static-pie $(LTO)
 DBGFLAGS = -ggdb3 -Og
 
-# include paths 
-INCLUDE = -I $(abspath $(COMMON_DIR)/include)
 
-export CC CXX LD CFLAGS CXXFLAGS LDFLAGS OPTIMIZE DBGFLAGS INCLUDE
+export CC CXX LD CFLAGS CXXFLAGS LDFLAGS OPTIMIZE DBGFLAGS COMMON_DIR
 
-.PHONY: all clean
+.PHONY: all debug clean
 
-all:
-	@echo "Building Common"
-	@make -C $(COMMON_DIR)
-	@echo "Building Kernel"
-	@make -C $(KN_DIR)
-	@echo "Building Bootloader"
-	@make -C $(BL_DIR)
-	@echo "Building User"
-	@make -C $(USR_DIR)
+all: common_all bootloader_all kernel_all user_all
+
+common_all:
+	@echo "Make Common All"
+	@make --no-print-directory -C $(COMMON_DIR)
+
+bootloader_all: common_all
+	@echo "Make Bootloader All"
+	@make --no-print-directory -C $(BL_DIR)
+
+kernel_all: common_all
+	@echo "Make Kernel All"
+	@make --no-print-directory -C $(KN_DIR)
+
+user_all: common_all
+	@echo "Make User All"
+	@make --no-print-directory -C $(USR_DIR)
+
+debug: common_debug bootloader_debug kernel_debug user_debug
+
+common_debug:
+	@echo "Make Common Debug"
+	@make --no-print-directory -C $(COMMON_DIR) debug
+
+bootloader_debug: common_debug
+	@echo "Make Bootloader Debug"
+	@make --no-print-directory -C $(BL_DIR) debug
+
+kernel_debug: common_debug
+	@echo "Make Kernel Debug"
+	@make --no-print-directory -C $(KN_DIR) debug
+
+user_debug: common_debug
+	@echo "Make User Debug"
+	@make --no-print-directory -C $(USR_DIR) debug
 
 clean:
-	@echo "Cleaning Common"
-	@make -C $(COMMON_DIR) clean
-	@echo "Cleaning Kernel"
-	@make -C $(KN_DIR) clean
-	@echo "Cleaning Bootloader"
-	@make -C $(BL_DIR) clean
-	@echo "Cleaning User"
+	@echo "Cleaning"
+	@make --no-print-directory -C $(COMMON_DIR) clean
+	@make --no-print-directory -C $(BL_DIR) clean
+	@make --no-print-directory -C $(KN_DIR) clean
+	@make --no-print-directory -C $(USR_DIR) clean
 

@@ -1,7 +1,7 @@
 .PHONY: clean
 
 all:
-	@echo "Kernel Make all"
+
+debug:
 
 clean:
-	@echo "Kernel Make clean"
