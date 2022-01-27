@@ -1,21 +1,26 @@
-# .PHONY: clean
+# makefile dependency
+MAKEFILE_DEP += $(MAKEFILE_LIST)
 
-# $TARGET = bootloader
-# $LINKER = linker.ld
+# header
+HDRS = $(shell find $(IDIR) -type f)
+HDRS += $(shell find $(COMMON_DIR)/$(IDIR) -type f)
 
-# all: $(TARGET).img
-	
-# %.img: %.elf
-# 	$(OBJCOPY) -O binary $< $@
+# depenency
+LINKER = linker.ld
+OBJS = $(shell find $(SDIR) -type f | sed -e 's/\.[^.]*$$/.o/')
+BUILD_OBJS = $(OBJS:$(SDIR)/%.o=$(BDIR)/%.o)
+LIB_BUILD_OBJS = $(shell find $(COMMON_DIR)/$(BDIR) -type f -name '*.o')
+DEBUG_OBJS = $(OBJS:$(SDIR)/%.o=$(DBGDIR)/%.o)
+LIB_DEBUG_OBJS = $(shell find $(COMMON_DIR)/$(DBGDIR) -type f -name '*.o')
 
-# %.elf: $(LINKER) $(OBJS)
-# 	$(LD) -T $(LINKER) $(LDFLAGS) -o $@ $(OBJS)
+# build method
+include $(COMMON_DIR)/common.mk
 
+.PRECIOUS: $(BUILD_OBJS) $(DEBUG_OBJS) $(BDIR)/$(BL_TARGET).elf $(DBGDIR)/$(BL_TARGET).elf
 
-.PHONY: clean
+all: $(BDIR)/$(BL_TARGET).img
 
-all:
-
-debug:
+debug: $(DBGDIR)/$(BL_TARGET).img
 
 clean:
+	@rm -rf $(BDIR)/* $(DBGDIR)/*

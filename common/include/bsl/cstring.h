@@ -4,53 +4,39 @@
 
 namespace bsl {
 
-constexpr void strcpy(char* dst, const char* src) {
-  while ((*dst++ = *src++) != '\0')
-    ;
+constexpr void *memchr(const void *ptr, int ch, size_t count) noexcept {
+  return __builtin_memchr(ptr, ch, count);
 }
 
-constexpr void strncpy(char* dst, const char* src, size_t n) {
-  while (n-- > 0 && (*dst++ = *src++) != '\0')
-    ;
+constexpr int memcmp(const void *lhs, const void *rhs, size_t count) noexcept {
+  return __builtin_memcmp(lhs, rhs, count);
 }
 
-constexpr void strcat(char* dst, const char* src) {
-  while (*dst != '\0') dst++;
-  while ((*dst++ = *src++) != '\0')
-    ;
+constexpr char *strchr(const char *str, int ch) noexcept {
+  return __builtin_strchr(str, ch);
 }
 
-constexpr void strncat(char* dst, const char* src, size_t n) {
-  while (*dst != '\0') dst++;
-  while (n-- > 0 && (*dst++ = *src++) != '\0')
-    ;
+constexpr int strcmp(const char *lhs, const char *rhs) noexcept {
+  return __builtin_strcmp(lhs, rhs);
 }
 
-constexpr size_t strlen(const char* str) {
-  size_t len = 0;
-  while (*str++ != '\0') {
-    ++len;
-  }
-  return len;
+constexpr size_t strlen(const char *str) noexcept {
+  return __builtin_strlen(str);
 }
 
-constexpr int strcmp(const char* s1, const char* s2) {
-  while (*s1 != '\0' && *s1 == *s2) {
-    ++s1;
-    ++s2;
-  }
-  return *(const unsigned char*)s1 - *(const unsigned char*)s2;
+constexpr int strncmp(const char *lhs, const char *rhs, size_t count) noexcept {
+  return __builtin_strncmp(lhs, rhs, count);
 }
 
-constexpr int strncmp(const char* s1, const char* s2, size_t n) {
-  if (n == 0) {
-    return 0;
-  }
-  while (n-- > 0 && *s1 != '\0' && *s1 == *s2) {
-    ++s1;
-    ++s2;
-  }
-  return *(const unsigned char*)s1 - *(const unsigned char*)s2;
+constexpr void *memcpy(void *dest, const void *src, size_t count) noexcept {
+  return __builtin_memcpy(dest, src, count);
 }
+
+constexpr void *memmove(void *dest, const void *src, size_t count) noexcept {
+  return __builtin_memmove(dest, src, count);
+}
+
+#define inline_memcpy(dest, src, count) \
+  __builtin_memcpy_inline(dest, src, count)
 
 }  // namespace bsl

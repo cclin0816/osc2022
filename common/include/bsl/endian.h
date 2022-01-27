@@ -10,19 +10,19 @@ namespace bsl {
 // big endian types
 template <typename T>
 requires std::integral<T>
-class be_t {
+class big_endian {
   T value;
 
  public:
-  constexpr be_t(T value) : value(value) {}
-  inline constexpr operator T() const { return bswap(value); }
+  constexpr big_endian(T value) noexcept : value(value) {}
+  inline constexpr operator T() noexcept const { return bswap(value); }
 };
 
 }  // namespace bsl
 
-using bu16_t = bsl::be_t<uint16_t>;
-using bu32_t = bsl::be_t<uint32_t>;
-using bu64_t = bsl::be_t<uint64_t>;
-using bi16_t = bsl::be_t<int16_t>;
-using bi32_t = bsl::be_t<int32_t>;
-using bi64_t = bsl::be_t<int64_t>;
+using bu16_t = bsl::big_endian<uint16_t>;
+using bu32_t = bsl::big_endian<uint32_t>;
+using bu64_t = bsl::big_endian<uint64_t>;
+using bi16_t = bsl::big_endian<int16_t>;
+using bi32_t = bsl::big_endian<int32_t>;
+using bi64_t = bsl::big_endian<int64_t>;
