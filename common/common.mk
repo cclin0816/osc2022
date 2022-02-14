@@ -3,15 +3,15 @@
 # asm files
 $(BDIR)/%.o: $(SDIR)/%.s $(MAKEFILE_DEP)
 	@mkdir -p `dirname $@`
-	$(ASM) $(ASMFLAGS) -c $< -o $@
+	$(ASM) $(ASMFLAGS) $(INC_DIR) -c $< -o $@
 
 $(BDIR)/%.o: $(SDIR)/%.S $(MAKEFILE_DEP)
 	@mkdir -p `dirname $@`
-	$(ASM) $(ASMFLAGS) -c $< -o $@
+	$(ASM) $(ASMFLAGS) $(INC_DIR) -c $< -o $@
 
 $(BDIR)/%.o: $(SDIR)/%.asm $(MAKEFILE_DEP)
 	@mkdir -p `dirname $@`
-	$(ASM) $(ASMFLAGS) -c $< -o $@
+	$(ASM) $(ASMFLAGS) $(INC_DIR) -c $< -o $@
 
 # c files
 $(BDIR)/%.o: $(SDIR)/%.c $(HDRS) $(MAKEFILE_DEP)
@@ -40,15 +40,15 @@ $(BDIR)/%.elf: $(LINKER) $(BUILD_OBJS) $(LIB_BUILD_OBJS) $(MAKEFILE_DEP)
 # asm files
 $(DBGDIR)/%.o: $(SDIR)/%.s $(MAKEFILE_DEP)
 	@mkdir -p `dirname $@`
-	$(ASM) $(ASMFLAGS) $(DBGFLAGS) -c $< -o $@
+	$(ASM) $(ASMFLAGS) $(INC_DIR) $(DBGFLAGS) -c $< -o $@
 
 $(DBGDIR)/%.o: $(SDIR)/%.S $(MAKEFILE_DEP)
 	@mkdir -p `dirname $@`
-	$(ASM) $(ASMFLAGS) $(DBGFLAGS) -c $< -o $@
+	$(ASM) $(ASMFLAGS) $(INC_DIR) $(DBGFLAGS) -c $< -o $@
 
 $(DBGDIR)/%.o: $(SDIR)/%.asm $(MAKEFILE_DEP)
 	@mkdir -p `dirname $@`
-	$(ASM) $(ASMFLAGS) $(DBGFLAGS) -c $< -o $@
+	$(ASM) $(ASMFLAGS) $(INC_DIR) $(DBGFLAGS) -c $< -o $@
 
 # c files
 $(DBGDIR)/%.o: $(SDIR)/%.c $(HDRS) $(MAKEFILE_DEP)
@@ -69,7 +69,7 @@ $(DBGDIR)/%.o: $(SDIR)/%.cxx $(HDRS) $(MAKEFILE_DEP)
 	$(CXX) $(CXXFLAGS) $(DBGFLAGS) $(INC_DIR) -c $< -o $@
 
 $(DBGDIR)/%.elf: $(LINKER) $(DEBUG_OBJS) $(LIB_DEBUG_OBJS) $(MAKEFILE_DEP)
-	$(LD) -T $(LINKER) $(LDFLAGS) $(DBGFLAGS) -o $@ $(DEBUG_OBJS) $(LIB_DEBUG_OBJS)
+	$(LD) -T $(LINKER) $(LDFLAGS) -o $@ $(DEBUG_OBJS) $(LIB_DEBUG_OBJS)
 
 
 %.img: %.elf $(MAKEFILE_DEP)

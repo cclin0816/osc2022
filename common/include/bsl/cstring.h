@@ -28,15 +28,18 @@ constexpr int strncmp(const char *lhs, const char *rhs, size_t count) noexcept {
   return __builtin_strncmp(lhs, rhs, count);
 }
 
-constexpr void *memcpy(void *dest, const void *src, size_t count) noexcept {
-  return __builtin_memcpy(dest, src, count);
+constexpr void *memcpy(void *dst, const void *src, size_t count) noexcept {
+  return __builtin_memcpy(dst, src, count);
 }
 
-constexpr void *memmove(void *dest, const void *src, size_t count) noexcept {
-  return __builtin_memmove(dest, src, count);
+constexpr void *memmove(void *dst, const void *src, size_t count) noexcept {
+  return __builtin_memmove(dst, src, count);
 }
 
-#define inline_memcpy(dest, src, count) \
-  __builtin_memcpy_inline(dest, src, count)
+constexpr void *memset(void *dst, int ch, size_t count) noexcept {
+  return __builtin_memset(dst, ch, count);
+}
+
+#define inline_memcpy(dst, src, count) __builtin_memcpy_inline(dst, src, count)
 
 }  // namespace bsl

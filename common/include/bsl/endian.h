@@ -1,6 +1,7 @@
 #pragma once
 
 #include <bsl/bswap.h>
+#include <bsl/config.h>
 
 #include <concepts>
 #include <cstdint>
@@ -8,14 +9,15 @@
 namespace bsl {
 
 // big endian types
-template <typename T>
-requires std::integral<T>
+// template <typename T>
+// requires std::integral<T>
+template <std::integral T>
 class big_endian {
   T value;
 
  public:
   constexpr big_endian(T value) noexcept : value(value) {}
-  inline constexpr operator T() noexcept const { return bswap(value); }
+  FORCE_INLINE constexpr operator T() const noexcept { return bswap(value); }
 };
 
 }  // namespace bsl
