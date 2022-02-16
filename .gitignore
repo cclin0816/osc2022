@@ -4,3 +4,4 @@
 **/resource/*
 .vscode
 .clang-tidy
+__pycache__

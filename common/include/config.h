@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstddef>
+#include <cstdint>
+
 constexpr auto CACHELINE_SIZE = 64U;
 
 #define CACHELINE_ALIGN __attribute__((aligned(CACHELINE_SIZE)))

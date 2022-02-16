@@ -1,10 +1,7 @@
 #pragma once
 
 #include <bsl/bswap.h>
-#include <bsl/config.h>
-
-#include <concepts>
-#include <cstdint>
+#include <config.h>
 
 namespace bsl {
 

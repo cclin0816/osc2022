@@ -1,8 +1,6 @@
 #pragma once
 
-#include <bsl/config.h>
-
-#include <cstddef>
+#include <config.h>
 
 namespace bsl {
 

@@ -13,6 +13,11 @@ LIB_BUILD_OBJS = $(shell find $(COMMON_DIR)/$(BDIR) -type f -name '*.o')
 DEBUG_OBJS = $(OBJS:$(SDIR)/%.o=$(DBGDIR)/%.o)
 LIB_DEBUG_OBJS = $(shell find $(COMMON_DIR)/$(DBGDIR) -type f -name '*.o')
 
+# only general register
+CFLAGS += -mgeneral-regs-only
+CXXFLAGS += -mgeneral-regs-only
+ASMFLAGS += -mgeneral-regs-only
+
 # build method
 include $(COMMON_DIR)/common.mk
 

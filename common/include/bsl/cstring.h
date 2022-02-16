@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cstddef>
+#include <config.h>
 
 namespace bsl {
 
@@ -36,7 +36,7 @@ constexpr void *memmove(void *dst, const void *src, size_t count) noexcept {
   return __builtin_memmove(dst, src, count);
 }
 
-constexpr void *memset(void *dst, int ch, size_t count) noexcept {
+inline void *memset(void *dst, int ch, size_t count) noexcept {
   return __builtin_memset(dst, ch, count);
 }
 
