@@ -1,4 +1,4 @@
-#include <mailbox.h>
+#include <peripheral/mailbox.h>
 #include <mmio.h>
 
 namespace mailbox {

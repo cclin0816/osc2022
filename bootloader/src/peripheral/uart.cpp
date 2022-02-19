@@ -1,11 +1,12 @@
 #include <mmio.h>
-#include <uart.h>
+#include <peripheral/uart.h>
 
 namespace uart0 {
 
 constexpr auto GPFSEL1 = 0x00200004U;
-// #define GPPUD (MMIO_BASE + 0x00200094)
-// #define GPPUDCLK0 (MMIO_BASE + 0x00200098)
+// constexpr auto GPPUD =  0x00200094U;
+// constexpr auto GPPUDCLK0 = 0x00200098U;
+// constexpr auto GPIO_PUP_PDN_CNTRL_REG0 = 0x002000e4U;
 
 constexpr auto AUX_ENABLE = 0x00215004U;
 constexpr auto AUX_MU_IO = 0x00215040U;
@@ -22,14 +23,13 @@ constexpr auto AUX_MU_BAUD = 0x00215068U;
 
 void init() {
   // initialize UART
-  mmio::w32(AUX_ENABLE,
-            mmio::r32(AUX_ENABLE) | 1);  // enable UART1, AUX mini uart
-  mmio::w32(AUX_MU_CNTL, 0);             // close Tx Rx
-  mmio::w32(AUX_MU_LCR, 3);              // data size 8 bits
-  mmio::w32(AUX_MU_MCR, 0);              // no auto flow control
-  mmio::w32(AUX_MU_IER, 0);              // disable interrupt - enable bit
-  mmio::w32(AUX_MU_IIR, 0x6);            // disable interrupts - clear FIFO
-  mmio::w32(AUX_MU_BAUD, 270);           // 115200 baud
+  mmio::w32(AUX_ENABLE, 1);     // enable UART1, AUX mini uart
+  mmio::w32(AUX_MU_CNTL, 0);    // close Tx Rx
+  mmio::w32(AUX_MU_LCR, 3);     // data size 8 bits
+  mmio::w32(AUX_MU_MCR, 0);     // no auto flow control
+  mmio::w32(AUX_MU_IER, 0);     // disable interrupt - enable bit
+  mmio::w32(AUX_MU_IIR, 0x6);   // disable interrupt - clear FIFO
+  mmio::w32(AUX_MU_BAUD, 33);  // 115200 baud
 
   // map UART1 to GPIO pins
   unsigned int r;
@@ -42,6 +42,10 @@ void init() {
   // mmio::w32(GPPUDCLK0, (1 << 14) | (1 << 15));  // set to gpio14, gpio15
   // wait_clock(150);
   // mmio::w32(GPPUDCLK0, 0);    // flush GPIO setup
+  // r = mmio::r32(GPIO_PUP_PDN_CNTRL_REG0);
+  // r &= ~((3 << 30) | (3 << 28)); 
+  // mmio::w32(GPIO_PUP_PDN_CNTRL_REG0, r);
+  
   mmio::w32(AUX_MU_CNTL, 3);  // enable Tx Rx
 }
 
