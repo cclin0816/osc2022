@@ -6,15 +6,13 @@
 namespace bsl {
 
 // big endian types
-// template <typename T>
-// requires std::integral<T>
 template <std::integral T>
 class big_endian {
   T value;
 
  public:
   constexpr big_endian(T value) noexcept : value(value) {}
-  FORCE_INLINE constexpr operator T() const noexcept { return bswap(value); }
+  inline constexpr operator T() const noexcept { return bswap(value); }
 };
 
 }  // namespace bsl

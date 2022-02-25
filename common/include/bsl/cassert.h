@@ -6,14 +6,13 @@ extern "C" {
 
 void abort_msg(const char* msg, const char* file, unsigned line,
                const char* func);
-
 }
 
-[[noreturn]] FORCE_INLINE void __assert_fail(const char* msg, const char* file,
-                                unsigned line, const char* func) {
-  abort_msg(msg, file, line, func);
-  abort();
-}
+#define __assert_fail(msg, file, line, func) \
+  do {                                       \
+    abort_msg(msg, file, line, func);        \
+    abort();                                 \
+  } while (0)
 
 #define assert(expr)                                                 \
   do {                                                               \

@@ -1,96 +1,116 @@
-// #include <bsl/charconv.h>
+#include <bsl/charconv.h>
+#include <bsl/endian.h>
 #include <config.h>
-// #include <mailbox.h>
+#include <dt.h>
+#include <mmio.h>
 #include <peripheral/uart.h>
-// #include <watchdog.h>
-#include <fdt.h>
 
-// extern "C" {
-// [[noreturn]] void _halt();
-// }
+#define kernel_addr 0x80000
 
-// namespace bl {
+namespace mmio {
 
-// bool strcmp(const char *lhs, const char *rhs) {
-//   while (*lhs && *rhs) {
-//     if (*lhs != *rhs) {
-//       return false;
-//     }
-//     ++lhs;
-//     ++rhs;
-//   }
-//   return *lhs == *rhs;
-// }
+uint64_t base = 0xfe000000;
 
-// template <typename T>
-// void log_num(const char *str, T num) {
-//   char buf[64];
-//   uint32_t len = bsl::to_chars(buf, sizeof(buf), num, 16);
-//   uart0::send(str);
-//   uart0::send(buf, len);
-//   uart0::send("\n");
-// }
+}  // namespace mmio
 
-// }  // namespace bl
+void log(uint64_t num) {
+  char buf[32];
+  uint32_t len = bsl::to_chars(buf, sizeof(buf), num, 16);
+  uart::bcm2835_aux_t serial;
+  serial.write("0x", 2);
+  serial.write(buf, len);
+  serial.write("\n", 1);
+}
 
-// void shell() {
-//   while (true) {
-//     // uart0::send("> ");
-//     char cmd[64];
-//     uint64_t pos = 0;
-//     while (true) {
-//       char c = uart0::recv();
-//       if (c == '\n') {
-//         cmd[pos] = '\0';
-//         break;
-//       }
-//       cmd[pos++] = c;
-//     }
-//     if (pos == 0) {
-//       continue;
-//     } else if (bl::strcmp(cmd, "help")) {
-//       uart0::send("help: \n help\n hello\n reboot\n board rev\n arm memory\n");
-//     } else if (bl::strcmp(cmd, "hello")) {
-//       uart0::send("hello\n");
-//     } else if (bl::strcmp(cmd, "reboot")) {
-//       uart0::send("reboot\n");
-//       uart0::flush();
-//       watchdog::start(5);
-//       _halt();
-//     } else if (bl::strcmp(cmd, "board rev")) {
-//       bl::log_num("board rev: 0x", mailbox::get_board_rev());
-//     } else if (bl::strcmp(cmd, "arm memory")) {
-//       auto [mem_base, mem_sz] = mailbox::get_arm_mem();
-//       bl::log_num("arm mem size: 0x", mem_sz);
-//       bl::log_num("arm mem base: 0x", mem_base);
-//     } else if (bl::strcmp(cmd, "firm rev")) {
-//       bl::log_num("firm rev: 0x", mailbox::get_firm_rev());
-//     } else if (bl::strcmp(cmd, "board model")) {
-//       bl::log_num("board model: 0x", mailbox::get_board_model());
-//     } else if (bl::strcmp(cmd, "board mac")) {
-//       bl::log_num("board mac: 0x", mailbox::get_board_mac());
-//     } else if (bl::strcmp(cmd, "board serial")) {
-//       bl::log_num("board serial: 0x", mailbox::get_board_serial());
-//     } else if (bl::strcmp(cmd, "vc memory")) {
-//       auto [mem_base, mem_sz] = mailbox::get_vc_mem();
-//       bl::log_num("vc mem size: 0x", mem_sz);
-//       bl::log_num("vc mem base: 0x", mem_base);
-//     }  else {
-//       uart0::send("unknown command\n");
-//     }
-//   }
-// }
+NOINLINE uint64_t get_val(void *ptr, uint32_t len) {
+  // log((uint64_t)ptr);
+  // log(len);
+  bu32_t *p = (bu32_t *)ptr;
+  if (len == 1) {
+    return *p;
+  } else {
+    uint64_t l, r;
+    l = p[0];
+    r = p[1];
+    return (l << 32) | r;
+  }
+}
+
+uint64_t get_mmio_base() {
+  void *node = dt::get_node("");
+  uint32_t ac_sz = dt::get_address_cells(node);
+  node = dt::get_node("soc");
+  uint32_t soc_ac_sz = dt::get_address_cells(node);
+  uint32_t soc_sc_sz = dt::get_size_cells(node);
+  auto [r_data, r_len] = dt::get_prop(node, "ranges");
+  auto *ranges = (bu32_t *)r_data;
+  // auto ranges = (bu32_t *)__builtin_assume_aligned(r_data, 4);
+  for (auto i = 0U; i < r_len / 4;) {
+    uint64_t bus_addr;
+    uint64_t phys_addr;
+
+    bus_addr = get_val(ranges + i, soc_ac_sz);
+    i += soc_ac_sz;
+    phys_addr = get_val(ranges + i, ac_sz);
+    i += ac_sz;
+    i += soc_sc_sz;
+    if (bus_addr == 0x7e000000) {
+      return phys_addr;
+    }
+  }
+  return 0;
+}
+
+void hand_shake() {
+  uart::bcm2835_aux_t uart;
+  uint16_t start_sym = 0x5487;
+  uint16_t sym = 0;
+  while (sym != start_sym) {
+    uint8_t c = uart.recv();
+    sym = (sym << 8) | c;
+  }
+  uart.write<uint16_t>(0x8754);
+  sym = 0;
+  start_sym = 0xffff;
+  while (sym != start_sym) {
+    uint8_t c = uart.recv();
+    sym = (sym << 8) | c;
+  }
+}
+
+void recv_kernel() {
+  uart::bcm2835_aux_t serial;
+  while (true) {
+    uint32_t kernel_size = serial.read<uint32_t>();
+    uint8_t *kernel = (uint8_t *)kernel_addr;
+    uint8_t check_sum = 0;
+
+    for (auto i = 0U; i < kernel_size; i++) {
+      kernel[i] = serial.recv();
+      check_sum ^= kernel[i];
+    }
+
+    serial.send(check_sum);
+    if (serial.recv() == 0) break;
+  }
+}
+
+extern "C" [[noreturn]] void to_kernel(void *fdt_ptr, void *kernel_entry);
 
 int main(void *fdt_ptr) {
+  // get mmio base
+  // initialize bcm2835_aux
+  // hand shake with send_kernel.py
+  // recv kernel
+  // el2 to el1 at kernel entry
 
-  uart0::init();
-
-  // wait uart connect
-  // uart0::recv();
-
-  fdt::walk(fdt_ptr);
-
-  // shell();
-
+  dt::init(fdt_ptr);
+  mmio::base = get_mmio_base();
+  uart::bcm2835_aux_t uart;
+  uart.init(921600);
+  hand_shake();
+  recv_kernel();
+  to_kernel(fdt_ptr, (void *)kernel_addr);
+  // dt::send_dt();
   return 0;
 }

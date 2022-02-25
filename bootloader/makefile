@@ -23,6 +23,8 @@ include $(COMMON_DIR)/common.mk
 
 .PRECIOUS: $(BUILD_OBJS) $(DEBUG_OBJS) $(BDIR)/$(BL_TARGET).elf $(DBGDIR)/$(BL_TARGET).elf
 
+.PHONY: clean all debug
+
 all: $(BDIR)/$(BL_TARGET).img
 
 debug: $(DBGDIR)/$(BL_TARGET).img

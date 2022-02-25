@@ -50,6 +50,8 @@ DBGFLAGS = -ggdb3 -O1
 export CC CXX LD ASM OBJCOPY OBJDUMP CFLAGS CXXFLAGS LDFLAGS ASMFLAGS OPTIMIZE LTO
 export DBGFLAGS COMMON_DIR IDIR SDIR BDIR DBGDIR BL_TARGET KN_TARGET MAKEFILE_DEP INC_DIR
 
+.PHONY: all clean debug common_all common_clean common_debug kernel_all kernel_clean kernel_debug bootloader_all bootloader_clean bootloader_debug user_all user_clean user_debug qemu qemu_debug attach burn
+
 all: common_all bootloader_all kernel_all user_all
 
 common_all:
@@ -104,4 +106,10 @@ qemu_debug: debug
 
 attach:
 	@echo "Attach GDB"
-	$(GDB) --se=$(BL_DIR)/$(DBGDIR)/$(BL_TARGET).elf -ex 'gef' -ex 'target remote localhost:1234'
+	$(GDB) --se=$(KN_DIR)/$(DBGDIR)/$(KN_TARGET).elf -ex 'gef' -ex 'target remote localhost:1234'
+
+burn: all
+	@echo "Burning to SD Card"
+	sudo mount -t drvfs E: resource/sd_mount && \
+	cp $(BL_DIR)/$(BDIR)/$(BL_TARGET).img resource/sd_mount/kernel8.img && \
+	sudo umount resource/sd_mount
