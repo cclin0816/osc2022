@@ -36,9 +36,7 @@ SECTIONS
         __bss_end = .;
     }
 
+    __linker_end = .;
+
    /DISCARD/ : { *(.comment) *(.gnu*) *(.note*) *(.eh_frame*) }
 }
-
-__bss_sz = (__bss_end - __bss_start);
-__vtable_offset = __vtable_start - __linker_start;
-__vtable_sz = (__vtable_end - __vtable_start) >> 3;

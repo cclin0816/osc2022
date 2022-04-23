@@ -61,7 +61,7 @@ void *get_node(const char *name) {
         if (bsl::strcmp(node->name, name) == 0) {
           return node;
         }
-        uint32_t name_len = bsl::p2align_up(bsl::strlen(node->name) + 1, 4);
+        uint32_t name_len = (uint32_t)bsl::p2align_up(bsl::strlen(node->name) + 1, 4);
         dt_struct = (bu32_t *)(&(node->name[name_len]));
         break;
       }
@@ -98,7 +98,7 @@ bsl::pair_t<void *, uint32_t> get_prop(void *node, const char *name) {
     switch (tag) {
       case tag_begin_node: {
         auto *node = (begin_node_t *)(dt_struct);
-        uint32_t name_len = bsl::p2align_up(bsl::strlen(node->name) + 1, 4);
+        uint32_t name_len = (uint32_t)bsl::p2align_up(bsl::strlen(node->name) + 1, 4);
         dt_struct = (bu32_t *)(&(node->name[name_len]));
         depth++;
         break;

@@ -1,7 +1,12 @@
-.PHONY: clean
+TARGET_DIR = $(shell find . -mindepth 1 -type d)
 
-all:
+.PHONY: clean all debug phony_explict
+
+all: $(TARGET_DIR)
 
 debug:
 
 clean:
+
+# ./%: ./%/*.txt
+# 	echo "Creating image: $@"

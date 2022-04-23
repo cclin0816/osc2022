@@ -32,19 +32,19 @@ QEMU = qemu-system-aarch64 -M raspi3 -dtb $(DTB) -initrd $(INITRAMFS) -serial nu
 TARGET_ARCH = -target aarch64-none-linux-gnu
 TARGET_CPU = -mcpu=cortex-a53
 OPTIMIZE = -O3
-WARNINGS = -Wall -Wextra -Wpedantic
+WARNINGS = -Wall -Wextra -Wpedantic -Wconversion
 BAREMETAL = -ffreestanding 
 NOEXCEP = -fno-exceptions -fno-unwind-tables -fno-rtti
 # LTO = -flto=thin
-CSTANDARD = -std=c11
-CXXSTANDARD = -std=c++20
+CSTANDARD = -std=c17
+CXXSTANDARD = -std=c++20 -stdlib=libc++
 CFLAGS = $(CSTANDARD) $(TARGET_ARCH) $(TARGET_CPU) 
 CFLAGS += $(WARNINGS) $(BAREMETAL) -fpie
 CXXFLAGS = $(CXXSTANDARD) $(TARGET_ARCH) $(TARGET_CPU) 
 CXXFLAGS += $(WARNINGS) $(BAREMETAL) $(NOEXCEP) -fpie -ffunction-sections -fdata-sections
 LDFLAGS = --gc-sections
 ASMFLAGS = $(TARGET_ARCH) $(TARGET_CPU) $(WARNINGS) -fpie
-DBGFLAGS = -ggdb3 -O1
+DBGFLAGS = -ggdb3 -O0 -fno-omit-frame-pointer
 
 
 export CC CXX LD ASM OBJCOPY OBJDUMP CFLAGS CXXFLAGS LDFLAGS ASMFLAGS OPTIMIZE LTO

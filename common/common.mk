@@ -1,15 +1,15 @@
 # release build
 
 # asm files
-$(BDIR)/%.o: $(SDIR)/%.s $(MAKEFILE_DEP)
+$(BDIR)/%.o: $(SDIR)/%.s $(HDRS) $(MAKEFILE_DEP)
 	@mkdir -p `dirname $@`
 	$(ASM) $(ASMFLAGS) $(INC_DIR) -c $< -o $@
 
-$(BDIR)/%.o: $(SDIR)/%.S $(MAKEFILE_DEP)
+$(BDIR)/%.o: $(SDIR)/%.S $(HDRS) $(MAKEFILE_DEP)
 	@mkdir -p `dirname $@`
 	$(ASM) $(ASMFLAGS) $(INC_DIR) -c $< -o $@
 
-$(BDIR)/%.o: $(SDIR)/%.asm $(MAKEFILE_DEP)
+$(BDIR)/%.o: $(SDIR)/%.asm $(HDRS) $(MAKEFILE_DEP)
 	@mkdir -p `dirname $@`
 	$(ASM) $(ASMFLAGS) $(INC_DIR) -c $< -o $@
 
@@ -38,15 +38,15 @@ $(BDIR)/%.elf: $(LINKER) $(BUILD_OBJS) $(LIB_BUILD_OBJS) $(MAKEFILE_DEP)
 # debug build
 
 # asm files
-$(DBGDIR)/%.o: $(SDIR)/%.s $(MAKEFILE_DEP)
+$(DBGDIR)/%.o: $(SDIR)/%.s $(HDRS) $(MAKEFILE_DEP)
 	@mkdir -p `dirname $@`
 	$(ASM) $(ASMFLAGS) $(INC_DIR) $(DBGFLAGS) -c $< -o $@
 
-$(DBGDIR)/%.o: $(SDIR)/%.S $(MAKEFILE_DEP)
+$(DBGDIR)/%.o: $(SDIR)/%.S $(HDRS) $(MAKEFILE_DEP)
 	@mkdir -p `dirname $@`
 	$(ASM) $(ASMFLAGS) $(INC_DIR) $(DBGFLAGS) -c $< -o $@
 
-$(DBGDIR)/%.o: $(SDIR)/%.asm $(MAKEFILE_DEP)
+$(DBGDIR)/%.o: $(SDIR)/%.asm $(HDRS) $(MAKEFILE_DEP)
 	@mkdir -p `dirname $@`
 	$(ASM) $(ASMFLAGS) $(INC_DIR) $(DBGFLAGS) -c $< -o $@
 

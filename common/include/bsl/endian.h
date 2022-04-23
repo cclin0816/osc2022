@@ -2,6 +2,7 @@
 
 #include <bsl/bswap.h>
 #include <config.h>
+#include <concepts>
 
 namespace bsl {
 

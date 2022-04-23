@@ -54,7 +54,7 @@ class bcm2835_aux_t : public interface_t {
   uint8_t recv_raw();
   // bcm2835_aux_t(uint64_t mmio_base)
   //     : base(mmio_base) {}
-  void init(uint64_t baudrate = 115200);
+  void init(uint32_t baudrate = 115200);
 };
 
 class dummy_t : public interface_t {

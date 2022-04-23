@@ -2,24 +2,30 @@
 
 #include <config.h>
 
-#include <concepts>
-
 namespace bsl {
 
-// byte swap 16, 32 64 bit values
-// template <typename T>
-// requires std::integral<T>
-template <std::integral T>
-FORCE_INLINE constexpr T bswap(T x) noexcept {
-  constexpr size_t len = sizeof(T);
-  static_assert(len == 2 || len == 4 || len == 8, "invalid size");
-  if (len == 2) {
-    return __builtin_bswap16(x);
-  } else if (len == 4) {
-    return __builtin_bswap32(x);
-  } else {
-    return __builtin_bswap64(x);
-  }
+inline constexpr uint16_t bswap(uint16_t x) noexcept {
+  return __builtin_bswap16(x);
+}
+
+inline constexpr uint32_t bswap(uint32_t x) noexcept {
+  return __builtin_bswap32(x);
+}
+
+inline constexpr uint64_t bswap(uint64_t x) noexcept {
+  return __builtin_bswap64(x);
+}
+
+inline constexpr int16_t bswap(int16_t x) noexcept {
+  return (int16_t)__builtin_bswap16((uint16_t)x);
+}
+
+inline constexpr int32_t bswap(int32_t x) noexcept {
+  return (int32_t)__builtin_bswap32((uint32_t)x);
+}
+
+inline constexpr int64_t bswap(int64_t x) noexcept {
+  return (int64_t)__builtin_bswap64((uint64_t)x);
 }
 
 }  // namespace bsl

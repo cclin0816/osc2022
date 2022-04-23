@@ -1,17 +1,20 @@
+#pragma once
+
 #include <config.h>
 
 extern "C" {
 
-[[noreturn]] void abort();
+[[noreturn]] void _abort() noexcept;
 
 void abort_msg(const char* msg, const char* file, unsigned line,
-               const char* func);
+               const char* func) noexcept;
+
 }
 
 #define __assert_fail(msg, file, line, func) \
   do {                                       \
     abort_msg(msg, file, line, func);        \
-    abort();                                 \
+    _abort();                                 \
   } while (0)
 
 #define assert(expr)                                                 \

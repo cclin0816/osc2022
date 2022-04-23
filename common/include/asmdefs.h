@@ -14,7 +14,7 @@
   name:			\
   .cfi_startproc;
 
-#define ENTRY(name)	ENTRY_ALIGN(name, 6)
+#define ENTRY(name)	ENTRY_ALIGN(name, 4)
 
 #define ENTRY_ALIAS(name)	\
   .global name;		\

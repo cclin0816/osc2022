@@ -1,6 +1,8 @@
 # makefile dependency
 MAKEFILE_DEP += $(MAKEFILE_LIST)
 
+# CXXFLAGS += -Wshadow
+
 # header
 HDRS = $(shell find $(IDIR) -type f)
 HDRS += $(shell find $(COMMON_DIR)/$(IDIR) -type f)

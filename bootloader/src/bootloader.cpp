@@ -15,7 +15,7 @@ uint64_t base = 0xfe000000;
 
 void log(uint64_t num) {
   char buf[32];
-  uint32_t len = bsl::to_chars(buf, sizeof(buf), num, 16);
+  uint32_t len = (uint32_t)bsl::to_chars(buf, sizeof(buf), num, 16);
   uart::bcm2835_aux_t serial;
   serial.write("0x", 2);
   serial.write(buf, len);
@@ -67,14 +67,14 @@ void hand_shake() {
   uint16_t sym = 0;
   while (sym != start_sym) {
     uint8_t c = uart.recv();
-    sym = (sym << 8) | c;
+    sym = (uint16_t)(sym << 8) | c;
   }
   uart.write<uint16_t>(0x8754);
   sym = 0;
   start_sym = 0xffff;
   while (sym != start_sym) {
     uint8_t c = uart.recv();
-    sym = (sym << 8) | c;
+    sym = (uint16_t)(sym << 8) | c;
   }
 }
 
@@ -82,6 +82,7 @@ void recv_kernel() {
   uart::bcm2835_aux_t serial;
   while (true) {
     uint32_t kernel_size = serial.read<uint32_t>();
+    serial.write<uint32_t>(kernel_size);
     uint8_t *kernel = (uint8_t *)kernel_addr;
     uint8_t check_sum = 0;
 
@@ -93,6 +94,16 @@ void recv_kernel() {
     serial.send(check_sum);
     if (serial.recv() == 0) break;
   }
+  // uint64_t clock_freq;
+  // asm volatile(
+  //     "mov x0, 0xffffffffffffffff;"
+  //     "msr cntp_tval_el0, x0;"
+  //     "mov x0, 1;"
+  //     "msr cntp_ctl_el0, x0;"
+  //     "mrs x0, cntfrq_el0;"
+  //     "mov %0, x0;"
+  //     : "=r"(clock_freq)::"x0");
+  // serial.write<uint64_t>(clock_freq);
 }
 
 extern "C" [[noreturn]] void to_kernel(void *fdt_ptr, void *kernel_entry);

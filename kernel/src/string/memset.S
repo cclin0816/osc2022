@@ -19,7 +19,6 @@
 #define count	x2
 #define dst	x3
 #define dstend	x4
-#define zva_val	x5
 
 ENTRY (memset)
 

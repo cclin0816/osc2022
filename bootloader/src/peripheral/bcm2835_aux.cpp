@@ -15,21 +15,21 @@ constexpr auto AUX_MU_BAUD = 0x215068U;
 
 namespace uart {
 
-void bcm2835_aux_t::init(uint64_t baudrate) {
-  mmio::w32(mmio::base, AUX_ENABLE, 1);    // enable UART1, AUX mini uart
-  mmio::w32(mmio::base, AUX_MU_CNTL, 0);   // close Tx Rx
-  mmio::w32(mmio::base, AUX_MU_LCR, 3);    // data size 8 bits
-  mmio::w32(mmio::base, AUX_MU_MCR, 0);    // no auto flow control
-  mmio::w32(mmio::base, AUX_MU_IER, 0);    // disable interrupt - enable bit
-  mmio::w32(mmio::base, AUX_MU_IIR, 0x6);  // disable interrupt - clear FIFO
-  mmio::w32(mmio::base, AUX_MU_BAUD, ((250000000 / 8) - baudrate) / baudrate);
+void bcm2835_aux_t::init(uint32_t baudrate) {
+  mmio::w32(mmio::base, AUX_ENABLE, 1U);    // enable UART1, AUX mini uart
+  mmio::w32(mmio::base, AUX_MU_CNTL, 0U);   // close Tx Rx
+  mmio::w32(mmio::base, AUX_MU_LCR, 3U);    // data size 8 bits
+  mmio::w32(mmio::base, AUX_MU_MCR, 0U);    // no auto flow control
+  mmio::w32(mmio::base, AUX_MU_IER, 0U);    // disable interrupt - enable bit
+  mmio::w32(mmio::base, AUX_MU_IIR, 0x6U);  // disable interrupt - clear FIFO
+  mmio::w32(mmio::base, AUX_MU_BAUD, ((250000000U / 8U) - baudrate) / baudrate);
 
   // setup gpio pin
 
   unsigned int r;
   r = mmio::r32(mmio::base, GPFSEL1);
-  r &= ~((7 << 12) | (7 << 15));  // clear gpio14, gpio15 setting
-  r |= (2 << 12) | (2 << 15);     // set alt5
+  r &= ~((7U << 12U) | (7U << 15U));  // clear gpio14, gpio15 setting
+  r |= (2U << 12U) | (2U << 15U);     // set alt5
   mmio::w32(mmio::base, GPFSEL1, r);
 
   // pi3 pi4 gpio differs, and reset value is fine

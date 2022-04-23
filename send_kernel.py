@@ -15,7 +15,11 @@ def send_kernel(serial, kernel_file):
   while True:
 
     print("Send kernel")
+    print("size: ", len(kn_file))
     serial.send(pwn.p32(len(kn_file)))
+    if pwn.u32(serial.recv(4)) != len(kn_file):
+      print("Error: kernel size mismatch")
+      return
     serial.send(kn_file)
     checksum = reduce(lambda x, y: x ^ y, kn_file)
     checksum_res = serial.recv(1)
@@ -23,6 +27,7 @@ def send_kernel(serial, kernel_file):
     if(checksum == checksum_res):
       serial.send(b'\x00')
       print("Checksum OK")
+      # print(pwn.u64(serial.recv(8)))
       break
     
     print("Checksum NG")

@@ -42,4 +42,12 @@ inline void *memset(void *dst, int ch, size_t count) noexcept {
 
 #define inline_memcpy(dst, src, count) __builtin_memcpy_inline(dst, src, count)
 
+constexpr size_t strlen_slow(const char *str) noexcept {
+  size_t len = 0;
+  while (str[len] != '\0') {
+    ++len;
+  }
+  return len;
+}
+
 }  // namespace bsl
