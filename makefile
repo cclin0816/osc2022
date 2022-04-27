@@ -106,7 +106,7 @@ qemu_debug: debug
 
 attach:
 	@echo "Attach GDB"
-	$(GDB) --se=$(KN_DIR)/$(DBGDIR)/$(KN_TARGET).elf -ex 'gef' -ex 'target remote localhost:1234'
+	$(GDB) --se=$(KN_DIR)/$(DBGDIR)/$(KN_TARGET).elf -ex 'gef' -ex 'target remote localhost:1234' -ex 'add-symbol-file $(KN_DIR)/$(DBGDIR)/$(KN_TARGET).elf 0xffff000000080000'
 
 burn: all
 	@echo "Burning to SD Card"

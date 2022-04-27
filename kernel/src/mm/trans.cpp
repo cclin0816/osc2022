@@ -1,17 +1,15 @@
-#include <mm.h>
+#include <bsl/align.h>
+#include <kn_conf.h>
+#include <mm/trans.h>
 
 namespace {
 
 bool vm_enable = false;
 uint64_t kn_base = 0;
-constexpr auto high_addr = 0xffff000000000000UL;
-// 40 bit physical address space
-//  8 bit aslr
-// 48 bit virtual address space
-constexpr auto kn_base_mask = 0xffffff0000000000UL;
-
+constexpr auto high_addr = 0xffffffffffffffffUL << HIGH_ADDR_SZ;
+constexpr auto max_aslr = 0xffffffffffffffffUL << PHY_ADDR_SZ;
 inline bool is_kn_addr(uint64_t addr) {
-  return (addr & kn_base_mask) == kn_base;
+  return (addr & high_addr) == high_addr;
 }
 
 }  // namespace
@@ -26,7 +24,7 @@ uint64_t to_kn(uint64_t addr) {
   if (is_kn_addr(addr)) {
     return addr;
   } else {
-    return phy_to_kn(to_phy(addr));
+    return phy_to_kn(addr);
   }
 }
 
@@ -39,15 +37,33 @@ uint64_t to_phy(uint64_t addr) {
 }
 
 uint64_t to_access(uint64_t addr) {
-  if ((is_kn_addr(addr) && vm_enable) || !(is_kn_addr(addr) || vm_enable)) {
+  bool is_kn = is_kn_addr(addr);
+  if ((is_kn && vm_enable) || !(is_kn || vm_enable)) {
     return addr;
-  } else if (is_kn_addr(addr)) {
-    return to_phy(addr);
+  } else if (is_kn) {
+    return kn_to_phy(addr);
   } else {
-    return to_kn(addr);
+    return phy_to_kn(addr);
   }
 }
 
-void set_kaslr(uint64_t aslr) { kn_base = (aslr & kn_base_mask) | high_addr; }
+void set_kaslr(uint64_t aslr) {
+  aslr = bsl::p2align_down(aslr, PAGE_SZ);
+  aslr = aslr | high_addr;
+  if (aslr > max_aslr) {
+    aslr = high_addr;
+  }
+  kn_base = aslr;
+}
+
+void set_vm_enable() { vm_enable = true; }
+
+uint64_t bus_to_kn(uint64_t addr) {
+  auto pa = bus_to_phy(addr);
+  if (pa == IDX_FAIL) {
+    return IDX_FAIL;
+  }
+  return phy_to_kn(pa);
+}
 
 }  // namespace mm

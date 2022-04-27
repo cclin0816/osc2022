@@ -2,6 +2,8 @@
 
 #include <config.h>
 
+namespace bsl {
+
 inline constexpr bool islower(int ch) noexcept {
   return (ch >= 'a' && ch <= 'z');
 }
@@ -38,3 +40,12 @@ inline constexpr bool isspace(int ch) noexcept {
 inline constexpr bool isprint(int ch) noexcept {
   return (ch >= 0x20 && ch <= 0x7e);
 }
+
+inline constexpr int to_digit(int ch) noexcept {
+  return (ch >= '0' && ch <= '9')   ? (ch - '0')
+         : (ch >= 'a' && ch <= 'f') ? (ch - 'a' + 10)
+         : (ch >= 'A' && ch <= 'F') ? (ch - 'A' + 10)
+                                    : -1;
+}
+
+}  // namespace bsl

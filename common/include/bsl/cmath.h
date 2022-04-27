@@ -2,11 +2,17 @@
 
 #include <config.h>
 
+#include <bit>
+
 namespace bsl {
 
-/**
- * @brief log2(x), x must be power of 2
- */
-inline constexpr int p2log2(uint64_t x) { return __builtin_ctzll(x); }
+inline constexpr int log2_floor(auto num) {
+  return std::countr_zero(std::bit_floor(num));
+}
+
+inline constexpr int log2_ceil(auto num) {
+  ASSUME(num > 1UL);
+  return std::countr_zero(std::bit_ceil(num));
+}
 
 }  // namespace bsl
