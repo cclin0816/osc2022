@@ -1,6 +1,5 @@
 #pragma once
 
-#include <bsl/char_dev.h>
 #include <config.h>
 
 #include <algorithm>
@@ -12,18 +11,20 @@ namespace bsl {
 template <typename Tp, uint64_t Sz>
 class ring_buf_t {
  private:
-  std::array<Tp, Sz> ring_buf;
+  std::array<Tp, Sz> *ring_buf = nullptr;
   std::atomic<uint64_t> read_head = 0;
   std::atomic<uint64_t> read_commit = 0;
   std::atomic<uint64_t> write_head = 0;
   std::atomic<uint64_t> write_commit = 0;
 
  public:
-  ring_buf_t() = default;
+  // new assumes no failed allocation
+  ring_buf_t() { ring_buf = new std::array<Tp, Sz>(); }
   ring_buf_t(const ring_buf_t &) = delete;
   ring_buf_t(ring_buf_t &&) = delete;
   ring_buf_t &operator=(const ring_buf_t &) = delete;
   ring_buf_t &operator=(ring_buf_t &&) = delete;
+  ~ring_buf_t() { delete ring_buf; }
 
   // non block read
   uint64_t nb_read(Tp *buf, uint64_t size, bool no_partial = false) {
@@ -53,10 +54,12 @@ class ring_buf_t {
     // copy data
     if (slice_st > slice_ed) {
       // wrap around
-      buf = std::copy(ring_buf.begin() + slice_st, ring_buf.begin() + Sz, buf);
-      std::copy(ring_buf.begin(), ring_buf.begin() + slice_ed, buf);
+      buf =
+          std::copy(ring_buf->begin() + slice_st, ring_buf->begin() + Sz, buf);
+      std::copy(ring_buf->begin(), ring_buf->begin() + slice_ed, buf);
     } else {
-      std::copy(ring_buf.begin() + slice_st, ring_buf.begin() + slice_ed, buf);
+      std::copy(ring_buf->begin() + slice_st, ring_buf->begin() + slice_ed,
+                buf);
     }
 
     // wait for inorder commit
@@ -111,10 +114,10 @@ class ring_buf_t {
     if (slice_st > slice_ed) {
       // wrap around
       auto slice_tmp = slice_len - slice_ed;
-      std::copy(buf, buf + slice_tmp, ring_buf.begin() + slice_st);
-      std::copy(buf + slice_tmp, buf + slice_len, ring_buf.begin());
+      std::copy(buf, buf + slice_tmp, ring_buf->begin() + slice_st);
+      std::copy(buf + slice_tmp, buf + slice_len, ring_buf->begin());
     } else {
-      std::copy(buf, buf + slice_len, ring_buf.begin() + slice_st);
+      std::copy(buf, buf + slice_len, ring_buf->begin() + slice_st);
     }
 
     // wait for inorder commit

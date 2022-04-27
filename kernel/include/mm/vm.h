@@ -37,6 +37,7 @@ constexpr uint64_t NORM_nocache = 0x1UL << 2U;
 constexpr uint64_t valid = 0x1UL;
 
 constexpr uint64_t kn_mem = RW_XX_tbl | UXN_tbl | UXN | AF | RW_XX | valid;
+constexpr uint64_t usr_mem = AF | RW_RW | valid;
 
 }  // namespace pa
 

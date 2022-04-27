@@ -1,9 +1,9 @@
-#include <bsl/cassert.h>
-#include <bsl/endian.h>
-#include <dt.h>
-#include <mmio.h>
+// #include <bsl/cassert.h>
+// #include <bsl/endian.h>
+// #include <dt.h>
+// #include <mmio.h>
 
-namespace dt {
+// namespace dt {
 
 // struct header_t {
 //   bu32_t magic;
@@ -97,4 +97,4 @@ namespace dt {
 //   return ret;
 // }
 
-}  // namespace dt
+// }  // namespace dt

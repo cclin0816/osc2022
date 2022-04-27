@@ -1,5 +1,7 @@
 #pragma once
 
+// c header for kernel configuration
+
 // 4KB page size
 #define PAGE_SZ 0x1000UL
 

@@ -1,9 +1,9 @@
-#include <kn_conf.h>
+#include <conf.h>
 
 .section ".text.boot"
 .global _start
 .align 4;
-// assumption: at el1 and simd, sve, fp enable
+
 _start:
 
   // lower to el1
@@ -41,15 +41,6 @@ _el1_start:
   // jump to kernel start
   mov x0, x16
   bl kn_entry
-
-  b jump_high
-
-.section ".text.enable_vm"
-.global enable_vm
-.align 4;
-
-jump_high:
-
   adr x1, jump_high_catch  
   add x1, x1, x0
   add sp, sp, x0
@@ -57,6 +48,7 @@ jump_high:
 
 jump_high_catch:
 
+  // TODO fix vtable
   bl kn_vm_entry
   b halt
 
