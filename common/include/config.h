@@ -13,7 +13,3 @@ constexpr auto CACHELINE_SIZE = 64U;
 #define ASSUME(x) __builtin_assume(x)
 #define PACKED __attribute__((packed))
 #define PURE __attribute__((pure))
-
-// struct CACHELINE_ALIGN cacheline_t {
-//   char pad[CACHELINE_SIZE];
-// };

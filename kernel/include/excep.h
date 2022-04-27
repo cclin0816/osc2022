@@ -1,13 +1,13 @@
-// #pragma once
+#pragma once
 
-// #include <conf.h>
-// #include <config.h>
+#include <conf.h>
+#include <config.h>
 
-// namespace excep {
+namespace excep {
 
-// void init();
-// void enable();
-// void disable();
-// bool is_enabled();
+void init();
+void enable();
+void disable();
+bool is_enabled();
 
-// }  // namespace excep
+}  // namespace excep

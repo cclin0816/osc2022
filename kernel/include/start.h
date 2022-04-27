@@ -1,5 +1,5 @@
-#pragma once 
+#pragma once
 
 extern "C" {
-  [[noreturn]] void halt();
+[[noreturn]] void halt();
 }

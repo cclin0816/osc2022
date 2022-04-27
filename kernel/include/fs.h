@@ -1,19 +1,18 @@
 #pragma once
 
-// // #include <bsl/pair.h>
-// // #include <bsl/string_view.h>
-#include <config.h>
+#include <bsl/pair.h>
+#include <bsl/string_view.h>
 #include <conf.h>
+#include <config.h>
 
-// namespace fs {
+namespace fs {
 
-// void init();
+void init();
 
-// // namespace cpio {
+namespace cpio {
 
-// // void init(void *);
-// // std::pair<void *, size_t> get_file(const bsl::string_view_t);
+std::pair<void *, size_t> get_file(const bsl::sv_t path);
 
-// // } // namespace cpio
+}  // namespace cpio
 
-// }  // namespace fs
+}  // namespace fs

@@ -4,7 +4,7 @@
 
 namespace bsl {
 
-// extension for serial charachter device
+// CRTP extension for serial charachter device
 // need only recv and send function
 template <typename Tp>
 class char_dev_t {
